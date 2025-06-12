@@ -20,7 +20,7 @@ const Home = ({ recommendedProducts, popularProducts, loggedIn }) => {
     return (
         <div className="home">
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
-                <img src={smugFace} alt="smug face" width={128} height={128} style={{ borderRadius: '50%' }} />
+                <img src={smugFace} alt="smug face" width={720} height={720} style={{ borderRadius: '20%' }} />
             </div>
             <Hero />
             {/* <Slider firstHeading="Explore Awesome Products" secondHeading="RECOMMENDED FOR YOU"/> */}
