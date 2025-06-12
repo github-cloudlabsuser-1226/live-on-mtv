@@ -1,0 +1,79 @@
+name: Deploy to Azure Static Web Apps
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    name: Build and Deploy UI to Azure Static Web Apps
+    env:
+      AADUSERNAME: ${{ secrets.AADUSERNAME }}
+      AADPASSWORD: ${{ secrets.AADPASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.SERVICEPRINCIPAL }}
+
+      # Create Static Web App if it doesn't exist
+      - name: Ensure Azure Static Web App exists
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            # Set variables
+            RESOURCE_GROUP="contoso-traders-rg${{ vars.SUFFIX }}"
+            STATIC_WEB_APP_NAME="contoso-traders-ui2${{ vars.SUFFIX }}"
+            LOCATION="eastus" # Change as needed
+
+            # Check if the Static Web App exists
+            if ! az staticwebapp show -n "$STATIC_WEB_APP_NAME" -g "$RESOURCE_GROUP" &>/dev/null; then
+              echo "Static Web App does not exist. Creating..."
+              az staticwebapp create \
+                -n "$STATIC_WEB_APP_NAME" \
+                -g "$RESOURCE_GROUP" \
+                -s "main" \
+                --location "$LOCATION" \
+                --source "src/ContosoTraders.Ui.Website" \
+                --output-location "build" \
+                --login-with-github false
+            else
+              echo "Static Web App already exists."
+            fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: src/ContosoTraders.Ui.Website/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: src/ContosoTraders.Ui.Website
+
+      - name: Build UI
+        run: npm run build
+        working-directory: src/ContosoTraders.Ui.Website
+        env:
+          # Add any required environment variables here, e.g.:
+          # REACT_APP_APIURL: ${{ secrets.REACT_APP_APIURL }}
+          # REACT_APP_APIURLSHOPPINGCART: ${{ secrets.REACT_APP_APIURLSHOPPINGCART }}
+          # REACT_APP_B2CCLIENTID: ${{ secrets.REACT_APP_B2CCLIENTID }}
+          # REACT_APP_BINGMAPSKEY: ${{ secrets.BINGMAPSKEY }}
+          # (Uncomment and set as needed)
+
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "src/ContosoTraders.Ui.Website"
+          output_location: "build"
