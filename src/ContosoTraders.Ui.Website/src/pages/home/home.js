@@ -6,6 +6,8 @@ import { ConfigService } from './../../services'
 // import Banner from "./components/Banner/banner";
 import Gridsection from "./sections/gridSection";
 import Finalsection from "./sections/finalSection";
+import smugFace from '../../assets/images/smug-face.jpg';
+
 const Home = ({ recommendedProducts, popularProducts, loggedIn }) => {
     // const [customerSupportEnabled, setCustomerSupportEnabled] = useState(false);
     useEffect(() => {
@@ -17,6 +19,9 @@ const Home = ({ recommendedProducts, popularProducts, loggedIn }) => {
     },[])
     return (
         <div className="home">
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
+                <img src={smugFace} alt="smug face" width={128} height={128} style={{ borderRadius: '50%' }} />
+            </div>
             <Hero />
             {/* <Slider firstHeading="Explore Awesome Products" secondHeading="RECOMMENDED FOR YOU"/> */}
             {/* <Banner firstHeading="Xbox Wireless Controller – Mineral Camo Special Edition" secondHeading="Textured triggers and bumpers | Hybrid D-pad | Button mapping | Bluetooth® technology"/> */}
