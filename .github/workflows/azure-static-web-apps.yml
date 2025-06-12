@@ -41,8 +41,7 @@ jobs:
                 -s "main" \
                 --location "$LOCATION" \
                 --source "src/ContosoTraders.Ui.Website" \
-                --output-location "build" \
-                --login-with-github false
+                --output-location "build"
             else
               echo "Static Web App already exists."
             fi
