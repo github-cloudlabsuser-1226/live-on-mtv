@@ -11,19 +11,20 @@ permissions:
   contents: read
 
 jobs:
-  trivy-scan:
-    name: Trivy File System Scan
-    runs-on: ubuntu-latest
-
+  build:
+    name: Trivy File system scan
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Trivy vulnerability scanner in fs mode
-        uses: aquasecurity/trivy-action@v0.63.0
+        uses: actions/checkout@v3
+      - name: Build an image from Dockerfile
+        run: docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
         with:
-          scan-type: 'fs'
-          scan-ref: '.'
+          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
