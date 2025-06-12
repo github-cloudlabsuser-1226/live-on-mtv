@@ -61,7 +61,7 @@ jobs:
       - name: Build UI
         run: npm run build
         working-directory: src/ContosoTraders.Ui.Website
-        env:
+        # env:
           # Add any required environment variables here, e.g.:
           # REACT_APP_APIURL: ${{ secrets.REACT_APP_APIURL }}
           # REACT_APP_APIURLSHOPPINGCART: ${{ secrets.REACT_APP_APIURLSHOPPINGCART }}
